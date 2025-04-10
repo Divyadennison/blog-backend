@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -20,7 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={<CreateBlog />} />
         <Route path="/blogs/:id" element={<BlogDetail />} />
-        <Route path="/blogs/:id/edit" element={<EditBlog />} /> {/* ✅ Correct edit route */}
+        <Route path="/blogs/:id/edit" element={<EditBlog />} />
       </Routes>
     </Router>
   );

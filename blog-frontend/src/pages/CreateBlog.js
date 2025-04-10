@@ -4,19 +4,13 @@ import axios from 'axios';
 export default function CreateBlog() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const token = localStorage.getItem('token');
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-
     try {
-      await axios.post('http://localhost:8000/api/blogs/', {
-        title,
-        content
-      }, {
-        headers: {
-          Authorization: `Token ${token}`
-        }
+      await axios.post('https://blog-backend-w55n.onrender.com/api/blogs/', { title, content }, {
+        headers: { Authorization: `Token ${token}` }
       });
       alert("Blog created!");
     } catch (err) {
@@ -28,19 +22,8 @@ export default function CreateBlog() {
   return (
     <form onSubmit={handleCreate}>
       <h2>Create Blog</h2>
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        required
-      />
-      <textarea
-        placeholder="Content"
-        value={content}
-        onChange={e => setContent(e.target.value)}
-        required
-      />
+      <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" required />
+      <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Content" required />
       <button type="submit">Create</button>
     </form>
   );

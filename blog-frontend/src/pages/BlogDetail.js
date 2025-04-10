@@ -7,9 +7,9 @@ export default function BlogDetail() {
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/blogs/${id}/`)
+    axios.get(`https://blog-backend-w55n.onrender.com/api/blogs/${id}/`)
       .then(res => setBlog(res.data))
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   }, [id]);
 
   if (!blog) return <div style={styles.loading}>Loading...</div>;
