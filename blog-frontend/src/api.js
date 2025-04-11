@@ -7,9 +7,16 @@ const axiosInstance = axios.create({
   },
 });
 
-const token = localStorage.getItem('token');
-if (token) {
-  axiosInstance.defaults.headers.common['Authorization'] = `Token ${token}`;
-}
+// ✅ Only attach token if it exists
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Token ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default axiosInstance;
