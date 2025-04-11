@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
-export default function CreateBlog() {
+function CreateBlog() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
-  const handleCreate = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('https://blog-backend-w55n.onrender.com/api/blogs/', { title, content }, {
-        headers: { Authorization: `Token ${token}` }
-      });
-      alert("Blog created!");
+      await api.post('/blogs/', { title, content });
+      navigate('/');
     } catch (err) {
-      alert("Failed to create blog");
-      console.error(err.response?.data || err.message);
+      console.error('Error creating blog:', err);
     }
   };
 
   return (
-    <form onSubmit={handleCreate}>
+    <form onSubmit={handleSubmit}>
       <h2>Create Blog</h2>
-      <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" required />
-      <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Content" required />
+      <input placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
+      <textarea placeholder="Content" value={content} onChange={e => setContent(e.target.value)} />
       <button type="submit">Create</button>
     </form>
   );
 }
+
+export default CreateBlog;

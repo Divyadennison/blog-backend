@@ -18,7 +18,6 @@ class SignupView(APIView):
         token = Token.objects.create(user=user)
         return Response({"token": token.key}, status=status.HTTP_201_CREATED)
 
-
 class LoginView(APIView):
     def post(self, request):
         email = request.data.get("email")

@@ -24,7 +24,8 @@ SECRET_KEY = 'django-insecure-#pkqb%t1tmzer-c(-ncz0xlg=zmu(uws(cz2+v!2c&yxf^wt@5
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['blog-backend-w55n.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'blog-backend-w55n.onrender.com']
+
 
 
 # Application definition
@@ -40,13 +41,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'blog',  
-    'corsheaders',          # your app
+    'corsheaders',          
 ]
 
 
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # 👈 Add this as the FIRST item
+    'corsheaders.middleware.CorsMiddleware',  
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -136,7 +137,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 DJOSER = {
-    'LOGIN_FIELD': 'username',  # ✅ Switch from email to username
+    'LOGIN_FIELD': 'username',  
     'USER_ID_FIELD': 'id',
     'SERIALIZERS': {
         'user': 'djoser.serializers.UserSerializer',

@@ -1,51 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../api';
 import { Link } from 'react-router-dom';
 
-export default function BlogList() {
+function BlogList() {
   const [blogs, setBlogs] = useState([]);
-  const [count, setCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5);
-  const loggedInUsername = localStorage.getItem('username');
-
-  const fetchBlogs = async (page = 1) => {
-    try {
-      const res = await axios.get(`https://blog-backend-w55n.onrender.com/api/blogs/?page=${page}`);
-      setBlogs(res.data.results);
-      setCount(res.data.count);
-      setCurrentPage(page);
-    } catch (err) {
-      console.error('Error fetching blogs:', err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+  const [currentPageUrl, setCurrentPageUrl] = useState('/blogs/');
 
   useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const totalPages = Math.ceil(count / pageSize);
+    setLoading(true);
+    axiosInstance.get(currentPageUrl)
+      .then(response => {
+        if (response.data.results) {
+          setBlogs(response.data.results);
+          setNextPage(response.data.next?.replace('http://localhost:8000/api', '') || null);
+          setPrevPage(response.data.previous?.replace('http://localhost:8000/api', '') || null);
+        } else {
+          setBlogs([]);
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching blogs:', error);
+        setLoading(false);
+      });
+  }, [currentPageUrl]);
 
   return (
-    <div style={{ maxWidth: '700px', margin: '0 auto', padding: '2rem' }}>
-      <h2 style={{ textAlign: 'center' }}>All Blogs</h2>
-      {blogs.map(blog => (
-        <div key={blog.id} style={{ border: '1px solid #ddd', padding: '1rem', marginBottom: '1rem' }}>
-          <Link to={`/blogs/${blog.id}`} style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{blog.title}</Link>
-          <p>{blog.content.slice(0, 100)}...</p>
-          {blog.author?.username === loggedInUsername && (
-            <Link to={`/blogs/${blog.id}/edit`}>✏️ Edit</Link>
-          )}
-        </div>
-      ))}
+    <div>
+      <h2>Latest Blogs</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : blogs.length > 0 ? (
+        <>
+          {blogs.map(blog => (
+            <div key={blog.id} style={{ marginBottom: '1rem' }}>
+              <h3>
+                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+              </h3>
+              <p>{blog.content.slice(0, 100)}...</p>
+              <small>Author: {blog.author.username}</small>
+            </div>
+          ))}
 
-      <div style={{ textAlign: 'center' }}>
-        <button onClick={() => fetchBlogs(currentPage - 1)} disabled={currentPage === 1}>◀ Prev</button>
-        {[...Array(totalPages).keys()].map(i => (
-          <button key={i} onClick={() => fetchBlogs(i + 1)}>{i + 1}</button>
-        ))}
-        <button onClick={() => fetchBlogs(currentPage + 1)} disabled={currentPage === totalPages}>Next ▶</button>
-      </div>
+          <div style={{ marginTop: '1rem' }}>
+            {prevPage && <button onClick={() => setCurrentPageUrl(prevPage)}>Previous</button>}
+            {nextPage && <button onClick={() => setCurrentPageUrl(nextPage)} style={{ marginLeft: '10px' }}>Next</button>}
+          </div>
+        </>
+      ) : (
+        <p>No blogs available.</p>
+      )}
     </div>
   );
 }
+
+export default BlogList;

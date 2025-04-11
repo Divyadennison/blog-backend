@@ -1,52 +1,35 @@
-// src/Navbar.js
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 
-function Navbar() {
+const Navbar = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // ✅ Check token on mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // true if token exists
-  }, []);
+  const token = localStorage.getItem('token');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    alert('Logged out');
-    navigate('/');
-    window.location.reload(); // refresh to update UI
+    navigate('/login');
   };
 
   return (
-    <nav>
-      <Link to="/">Home</Link> |{' '}
-
-      {!isLoggedIn && (
-        <>
-          <Link to="/login">Login</Link> |{' '}
-          <Link to="/signup">Signup</Link> |{' '}
-        </>
-      )}
-
-      {isLoggedIn && (
-        <>
-          <Link to="/create">Create Blog</Link> |{' '}
-          <button onClick={handleLogout} style={buttonStyle}>🚪 Logout</button>
-        </>
-      )}
-    </nav>
+    <div className="navbar">
+      <Link to="/" className="blog-title">Blog App</Link>
+      <div>
+        {token ? (
+          <>
+            <Link to="/create">Create Blog</Link>
+            <button onClick={handleLogout} style={{ marginLeft: '1rem', background: 'none', color: 'white', border: 'none', cursor: 'pointer' }}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/signup">Signup</Link>
+          </>
+        )}
+      </div>
+    </div>
   );
-}
-
-const buttonStyle = {
-  background: 'none',
-  border: 'none',
-  color: 'white',
-  cursor: 'pointer',
-  fontSize: '14px'
 };
 
 export default Navbar;

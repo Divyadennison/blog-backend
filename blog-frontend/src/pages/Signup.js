@@ -1,35 +1,41 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../api';
 
-function Signup() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const Signup = () => {
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      await axios.post('https://blog-backend-w55n.onrender.com/auth/users/', {
-        username, password
-      });
-      alert("Signup successful!");
+      await axiosInstance.post('/auth/users/', formData);
+      alert('Signup successful! Please log in.');
       navigate('/login');
     } catch (err) {
-      setError("Signup failed. Try a stronger password.");
+      setError('Signup failed. Try again.');
+      console.error(err);
     }
   };
 
   return (
-    <form onSubmit={handleSignup}>
+    <div className="form-container">
       <h2>Signup</h2>
+      <form onSubmit={handleSubmit}>
+        <input name="username" placeholder="Username" onChange={handleChange} required />
+        <input name="email" placeholder="Email" type="email" onChange={handleChange} required />
+        <input name="password" placeholder="Password" type="password" onChange={handleChange} required />
+        <button type="submit">Signup</button>
+      </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-      <button type="submit">Signup</button>
-    </form>
+    </div>
   );
-}
+};
 
 export default Signup;
